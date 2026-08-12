@@ -1,0 +1,60 @@
+#Segementation Approach:
+for cls, mask in zip(result.boxes.cls.cpu().numpy(), results[0].masks.data):
+    if int(cls) == 1:
+        leaf_count += 1 
+        num_pixels = mask.sum()
+        polygon = results[0].masks.xy[leaf_count - 1].astype(np.int32)
+        M = cv2.moments(polygon)
+        if M["m00"] != 0:
+            cx = int(M["m10"] / M["m00"])
+            cy = int(M["m01"] / M["m00"])
+        print(f"Leaf {leaf_count} pixel count: {num_pixels}")
+        cv2.putText(annotated_image, f"Leaf {leaf_count} pixel count: {num_pixels}", (cx, cy), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+
+    elif int(cls) == 2:
+        strawberry_count += 1
+        num_pixels = mask.sum()
+        polygon = results[0].masks.xy[strawberry_count - 1].astype(np.int32)
+        M = cv2.moments(polygon)
+        if M["m00"] != 0:
+            cx = int(M["m10"] / M["m00"])
+            cy = int(M["m01"] / M["m00"])
+        print(f"Strawberry {strawberry_count} pixel count: {num_pixels}")
+        cv2.putText(annotated_image, f"Strawberry {strawberry_count} pixel count: {num_pixels}", (cx, cy), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+
+    elif int(cls) == 3:
+        flowers_count += 1
+        num_pixels = mask.sum()
+        polygon = results[0].masks.xy[flowers_count - 1].astype(np.int32)
+        M = cv2.moments(polygon)
+        if M["m00"] != 0:
+            cx = int(M["m10"] / M["m00"])
+            cy = int(M["m01"] / M["m00"])
+        print(f"Flower {flowers_count} pixel count: {num_pixels}")
+        cv2.putText(annotated_image, f"Flower {flowers_count} pixel count: {num_pixels}", (cx, cy), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+
+
+#Boudning boxes approach:
+for cls, mask, box in zip(result.boxes.cls.cpu().numpy(), results[0].masks.data, result.boxes):
+    if int(cls) == 1:
+        x1, y1, x2, y2 = box.xyxy.cpu().numpy()[0]
+        leaf_count += 1
+        num_pixels = mask.sum()
+        print(f"Leaf {leaf_count} pixel count: {num_pixels}")
+        x_cord = int((x1 + x2) / 2)
+        y_cord = int((y1 + y2) / 2)
+        cv2.putText(annotated_image, f"Leaf {leaf_count} pixel count: {num_pixels}", (int(x1), int(y1)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+
+    elif int(cls) == 2:
+        x1, y1, x2, y2 = box.xyxy.cpu().numpy()[0]
+        strawberry_count += 1
+        num_pixels = mask.sum()
+        print(f"Strawberry {strawberry_count} pixel count: {num_pixels}")
+        cv2.putText(annotated_image, f"Strawberry {strawberry_count} pixel count: {num_pixels}", (int(x1), int(y1)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+
+    elif int(cls) == 3:
+        x1, y1, x2, y2 = box.xyxy.cpu().numpy()[0]
+        flowers_count += 1
+        num_pixels = mask.sum()
+        print(f"Flower {flowers_count} pixel count: {num_pixels}")
+        cv2.putText(annotated_image, f"Flower {flowers_count} pixel count: {num_pixels}", (int(x1), int(y1)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)

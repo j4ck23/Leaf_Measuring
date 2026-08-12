@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 3
+names: ['Flowers', 'Leaves', 'Strawberries']
+
+roboflow:
+  workspace: strawberry-leaves
+  project: yolo_training-obx60
+  version: 6
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/strawberry-leaves/yolo_training-obx60/dataset/6
