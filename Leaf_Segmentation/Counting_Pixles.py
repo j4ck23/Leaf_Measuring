@@ -22,27 +22,29 @@ image = cv2.resize(image, None, fx=scale, fy=scale)
 # Run inference
 results = model(image)
 
+# Get the first result from the results list
 result = results[0]
-annotated_image = results[0].plot(
-    boxes=False,
-)
+annotated_image = results[0].plot(boxes=False) #plot the masks on the image without bounding boxes
 
+#set counters for objects
 leaf_count = 0
 strawberry_count = 0
 flowers_count = 0
+
+#start loop to count pixels and annotate image based on detected objects
 for cls, masks in zip(result.boxes.cls.cpu().numpy(), results[0].masks):
-    if int(cls) == 1:
-        leaf_count += 1 
-        num_pixels = masks.data.sum()
-        polygon = masks.xy[0].astype(np.int32)
-        M = cv2.moments(polygon)
-        if M["m00"] != 0:
+    if int(cls) == 1: #if leaf
+        leaf_count += 1 #Increase counter for leaves
+        num_pixels = masks.data.sum() #Count pixels in the mask of current object from loop
+        polygon = masks.xy[0].astype(np.int32) #Convert polygon coordinates to integer type
+        M = cv2.moments(polygon) #Calculate moments of the polygon to find centroid
+        if M["m00"] != 0: #Get centroid coordinates if area is not zero
             cx = int(M["m10"] / M["m00"])
             cy = int(M["m01"] / M["m00"])
         else:
             cx, cy = polygon[0]
-        print(f"Leaf {leaf_count} pixel count: {num_pixels}")
-        cv2.putText(annotated_image, f"L:{leaf_count}: {num_pixels}px", (cx, cy), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+        print(f"Leaf {leaf_count} pixel count: {num_pixels}") #Print current leaf count and pixel count to console
+        cv2.putText(annotated_image, f"L:{leaf_count}: {num_pixels}px", (cx, cy), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)# Annotate the image with leaf count and pixel count at the centroid of the leaf
 
     elif int(cls) == 2:
         strawberry_count += 1
@@ -72,7 +74,7 @@ for cls, masks in zip(result.boxes.cls.cpu().numpy(), results[0].masks):
 
 
 
-
+#Add total counts of leaves, strawberries, and flowers to the top left corner of the image
 cv2.putText(annotated_image, f"Leaves: {leaf_count}", (20,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2)
 cv2.putText(annotated_image, f"Strawberries: {strawberry_count}", (20,80), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2)
 cv2.putText(annotated_image, f"Flowers: {flowers_count}", (20,120), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2)
