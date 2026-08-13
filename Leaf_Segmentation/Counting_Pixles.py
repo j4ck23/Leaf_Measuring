@@ -30,10 +30,10 @@ annotated_image = results[0].plot(
 leaf_count = 0
 strawberry_count = 0
 flowers_count = 0
-for cls, mask, masks in zip(result.boxes.cls.cpu().numpy(), results[0].masks.data, results[0].masks):
+for cls, masks in zip(result.boxes.cls.cpu().numpy(), results[0].masks):
     if int(cls) == 1:
         leaf_count += 1 
-        num_pixels = mask.sum()
+        num_pixels = masks.data.sum()
         polygon = masks.xy[0].astype(np.int32)
         M = cv2.moments(polygon)
         if M["m00"] != 0:
@@ -46,7 +46,7 @@ for cls, mask, masks in zip(result.boxes.cls.cpu().numpy(), results[0].masks.dat
 
     elif int(cls) == 2:
         strawberry_count += 1
-        num_pixels = mask.sum()
+        num_pixels = masks.data.sum()
         polygon = masks.xy[0].astype(np.int32)
         M = cv2.moments(polygon)
         if M["m00"] != 0:
@@ -59,7 +59,7 @@ for cls, mask, masks in zip(result.boxes.cls.cpu().numpy(), results[0].masks.dat
 
     elif int(cls) == 3:
         flowers_count += 1
-        num_pixels = mask.sum()
+        num_pixels = masks.data.sum()
         polygon = masks.xy[0].astype(np.int32)
         M = cv2.moments(polygon)
         if M["m00"] != 0:
